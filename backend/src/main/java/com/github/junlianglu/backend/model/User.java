@@ -20,11 +20,11 @@ public class User {
     private Date createdAt = new Date();
     private Date updatedAt = new Date();
 
-//    @DBRef
-//    private List<Property> properties;
-//
-//    @DBRef
-//    private List<Booking> bookings;
+    @DBRef(lazy = true)
+    private List<Property> properties;
+
+    @DBRef(lazy = true)
+    private List<Booking> bookings;
 
     // Getters and setters
 
@@ -92,19 +92,19 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
-//    public List<Property> getProperties() {
-//        return properties;
-//    }
-//
-//    public void setProperties(List<Property> properties) {
-//        this.properties = properties;
-//    }
-//
-//    public List<Booking> getBookings() {
-//        return bookings;
-//    }
-//
-//    public void setBookings(List<Booking> bookings) {
-//        this.bookings = bookings;
-//    }
+    public List<Property> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(List<Property> properties) {
+        this.properties = properties;
+    }
+
+    public List<Booking> getBookings() {
+        return bookings;
+    }
+
+    public void setBookings(List<Booking> bookings) {
+        this.bookings = bookings;
+    }
 }
