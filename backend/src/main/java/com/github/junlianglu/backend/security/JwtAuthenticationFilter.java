@@ -20,21 +20,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private JwtConfig jwtConfig;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        String method = request.getMethod();
+
+        // Skip filter for public endpoints
+        return path.startsWith("/api/auth") ||
+                (path.startsWith("/api/users/") && "GET".equalsIgnoreCase(method));
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        String path = request.getRequestURI();
-        if (path.startsWith("/api/auth")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
             response.getWriter().write("{\"error\":\"No token provided\"}");
             return;
         }
@@ -49,11 +54,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .parseClaimsJws(token)
                     .getBody();
 
-            request.setAttribute("user", claims); // Attach decoded token info
-
-            filterChain.doFilter(request, response); // Pass to next filter
+            request.setAttribute("user", claims);
+            filterChain.doFilter(request, response);
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
             response.getWriter().write("{\"error\":\"Invalid or expired token\"}");
         }
     }
